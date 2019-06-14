@@ -77,5 +77,31 @@ namespace Library.API.Controllers
            
            
         }
+
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+ 
+
+        [HttpDelete("{bookId}")]
+        public ActionResult DeleteBookForAuthor(Guid authorid, Guid bookId)
+        {
+            if (!_libraryRepository.AuthorExists(authorid))
+            {
+                return NotFound();
+            }
+
+            var bookforAuthor = _libraryRepository.GetBookForAuthor(authorid, bookId);
+
+            if (bookforAuthor == null)
+            {
+                return NotFound();
+            }
+            _libraryRepository.DeleteBook(bookforAuthor);
+            if (!_libraryRepository.Save())
+            {
+                throw new Exception($"Delete Book {bookId} for Author {authorid} failed");
+            }
+            return NoContent();
+        }
     }
 }
