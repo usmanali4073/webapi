@@ -18,7 +18,9 @@ namespace Library
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+           WebHost.CreateDefaultBuilder(args).ConfigureAppConfiguration((hosting, config) => {
+               config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+           })
                 .UseStartup<Startup>();
     }
 }
