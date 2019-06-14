@@ -6,6 +6,7 @@ using Library.API.Entities;
 using Library.API.Helpers;
 using Library.API.Models;
 using Library.API.Services;
+using Library.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -46,7 +47,7 @@ namespace Library
             // register the repository
             services.AddScoped<ILibraryRepository, LibraryRepository>();
 
-          
+
 
         }
 
@@ -73,6 +74,7 @@ namespace Library
                 ForMember(dest => dest.Age, opt => opt.MapFrom(src => src.DateOfBirth.GetCurrentAge()));
                 cfg.CreateMap<Book, BooksDto>();
                 cfg.CreateMap<AuthorForCreationDto, Author>();
+                cfg.CreateMap<BookforCreationDto, Book>();
             });
 #pragma warning restore CS0618 // Type or member is obsolete
 

@@ -6,6 +6,7 @@ using AutoMapper;
 using Library.API.Entities;
 using Library.API.Models;
 using Library.API.Services;
+using Library.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,8 @@ namespace Library.API.Controllers
         {
             _libraryRepository = libraryRepository;
         }
+
+
         [HttpGet]
         public ActionResult<IEnumerable<BooksDto>> GetBooksForAuthor(Guid authorid)
         {
@@ -32,7 +35,8 @@ namespace Library.API.Controllers
             var books = Mapper.Map<IEnumerable<Book>,IEnumerable<BooksDto>>(_libraryRepository.GetBooksForAuthor(authorid));
             return Ok(books);
         }
-        [HttpGet("{bookId}")]
+
+        [HttpGet("{bookId}", Name = "GetBookByAuthor")]
        public ActionResult<BooksDto> GetBookByAuthor(Guid authorid, Guid bookId)
         {
             var book = _libraryRepository.GetBookForAuthor(authorid, bookId);
@@ -41,6 +45,37 @@ namespace Library.API.Controllers
                 return NotFound();
             };
             return Ok(Mapper.Map<Book, BooksDto>(book));
+        }
+
+        [HttpPost]
+        public ActionResult CreateBookForAuthor(Guid authorid, [FromBody]  BookforCreationDto book)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                if (!_libraryRepository.AuthorExists(authorid))
+                {
+                    return NotFound();
+                }
+                var booketitiy = Mapper.Map<BookforCreationDto, Book>(book);
+                _libraryRepository.AddBookForAuthor(authorid, booketitiy);
+
+                if (!_libraryRepository.Save())
+                {
+                    throw new Exception($"Failed to Add the Book{book.Title} for {authorid}");
+                }
+                return CreatedAtRoute("GetBookByAuthor", new { authorid = authorid, bookId = booketitiy.Id }, booketitiy);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+           
+           
         }
     }
 }

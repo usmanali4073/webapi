@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Library.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -14,5 +15,6 @@ namespace Library.API.Models
         public string LastName { get; set; }
         public DateTimeOffset DateofBirth { get; set; }
         public string Genre { get; set; }
+        public List<BookforCreationDto> Books { get; set; } = new List<BookforCreationDto>();
     }
 }
