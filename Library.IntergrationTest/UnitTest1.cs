@@ -22,10 +22,8 @@ namespace Library.IntergrationTest
             string _ContentType = "application/json";
             client = _factory.CreateClient();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(_ContentType));
-            client.BaseAddress = new Uri("https://speaya.com");
-         
+            client.BaseAddress = new Uri("http://localhost:5000");
 
-            var guid = Guid.Parse("d6343c83-67a9-467d-82bd-e3dd81748153");
             // Act
             var response = await client.GetAsync(client.BaseAddress+ "/api/Authors");
 

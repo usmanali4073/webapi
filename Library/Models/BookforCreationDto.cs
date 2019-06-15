@@ -6,12 +6,8 @@ using System.Threading.Tasks;
 
 namespace Library.Models
 {
-    public class BookforCreationDto
+    public class BookforCreationDto : BookForManipulationDto
     {
-        [Required]
-        public string Title { get; set; }
-        [Required]
-        public string Description { get; set; }
 
     }
 }
