@@ -6,6 +6,7 @@ using Library.API.Entities;
 using Library.API.Helpers;
 using Library.API.Models;
 using Library.API.Services;
+using Library.Entities;
 using Library.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -75,6 +76,9 @@ namespace Library
                 cfg.CreateMap<Book, BooksDto>();
                 cfg.CreateMap<AuthorForCreationDto, Author>();
                 cfg.CreateMap<BookforCreationDto, Book>();
+                cfg.CreateMap<BookforUpdateDto, Book>();
+                cfg.CreateMap<Book, BookforUpdateDto>();
+             
             });
 #pragma warning restore CS0618 // Type or member is obsolete
 

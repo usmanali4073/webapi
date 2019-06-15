@@ -6,8 +6,10 @@ using AutoMapper;
 using Library.API.Entities;
 using Library.API.Models;
 using Library.API.Services;
+using Library.Entities;
 using Library.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Library.API.Controllers
@@ -100,6 +102,77 @@ namespace Library.API.Controllers
             if (!_libraryRepository.Save())
             {
                 throw new Exception($"Delete Book {bookId} for Author {authorid} failed");
+            }
+            return NoContent();
+        }
+        [HttpPut("{id}")]
+        public ActionResult UpdateBookforAuthor(Guid authorid,Guid id, [FromBody] BookforUpdateDto book)
+        {
+            if (book == null)
+            {
+                return BadRequest();
+            }
+            if (!_libraryRepository.AuthorExists(authorid))
+            {
+                return NotFound();
+            }
+
+            var bookforUpdatefromRepo = _libraryRepository.GetBookForAuthor(authorid, id);
+            if (bookforUpdatefromRepo == null)
+            {
+                var booktoAdd = Mapper.Map<Book>(book);
+                if (booktoAdd != null)
+                {
+                    booktoAdd.Id = id;
+                }
+                _libraryRepository.AddBookForAuthor(authorid, booktoAdd);
+                if (_libraryRepository.Save())
+                {
+                    return CreatedAtRoute("GetBookByAuthor", new { authorid = authorid, bookId = id }, booktoAdd);
+                }
+            }
+            Mapper.Map(book, bookforUpdatefromRepo);
+
+            _libraryRepository.UpdateBookForAuthor(bookforUpdatefromRepo);
+
+            if (!_libraryRepository.Save())
+            {
+                throw new Exception("Error while updating the Book");
+            }
+
+            return NoContent();
+
+        }
+
+        [HttpPatch("{id}")]
+        public ActionResult PartiallyUpdateBookForAuthor(Guid authorid, Guid id, JsonPatchDocument<BookforUpdateDto> docPatch)
+        {
+            if (docPatch == null)
+            {
+                return BadRequest();
+            }
+            if (!_libraryRepository.AuthorExists(authorid))
+            {
+                return NotFound();
+            }
+
+            //Find The Book by Author and BookId
+            var BookforAuthorFromRepo = _libraryRepository.GetBookForAuthor(authorid, id);
+            if (BookforAuthorFromRepo == null)
+            {
+                return NotFound();
+            }
+            //Convert the Book to BookforUpdateDto so JsonPatch can be applied
+            var booktoPatch = Mapper.Map<BookforUpdateDto>(BookforAuthorFromRepo);
+            //Apply The Patch
+            docPatch.ApplyTo(booktoPatch);
+            //Tranfer the Update booktoPatch to Book
+            Mapper.Map(booktoPatch, BookforAuthorFromRepo);
+            //Add the Patched Book to Repo
+            _libraryRepository.UpdateBookForAuthor(BookforAuthorFromRepo);
+            if (!_libraryRepository.Save())
+            {
+                throw new Exception("Error while Patch the Book");
             }
             return NoContent();
         }
