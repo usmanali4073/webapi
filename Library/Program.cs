@@ -7,6 +7,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NLog.Web;
 
 namespace Library
 {
@@ -18,9 +19,9 @@ namespace Library
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-           WebHost.CreateDefaultBuilder(args).ConfigureAppConfiguration((hosting, config) => {
+           WebHost.CreateDefaultBuilder(args).ConfigureAppConfiguration((hosting, config) =>
+           {
                config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-           })
-                .UseStartup<Startup>();
+           }).UseNLog().UseStartup<Startup>();
     }
 }

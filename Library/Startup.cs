@@ -9,6 +9,7 @@ using Library.API.Services;
 using Library.Entities;
 using Library.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
@@ -53,11 +54,23 @@ namespace Library
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddConsole();
+            loggerFactory.AddDebug(LogLevel.Information);
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.Use(async (context, next) =>
+                {
+                    var exceptionHandlerFeature = context.Features.Get<ExceptionHandlerFeature>();
+                    if (exceptionHandlerFeature != null)
+                    {
+                        var logger = loggerFactory.CreateLogger("Global Exception Logger");
+                        logger.LogError(500, exceptionHandlerFeature.Error, exceptionHandlerFeature.Error.Message);
+                    }
+                    await next();
+                });
             }
             else
             {
@@ -78,7 +91,7 @@ namespace Library
                 cfg.CreateMap<BookforCreationDto, Book>();
                 cfg.CreateMap<BookforUpdateDto, Book>();
                 cfg.CreateMap<Book, BookforUpdateDto>();
-             
+
             });
 #pragma warning restore CS0618 // Type or member is obsolete
 

@@ -174,7 +174,8 @@ namespace Library.API.Controllers
             //Convert the Book to BookforUpdateDto so JsonPatch can be applied
             var booktoPatch = Mapper.Map<BookforUpdateDto>(BookforAuthorFromRepo);
             //Apply The Patch
-            docPatch.ApplyTo(booktoPatch, ModelState);
+            //docPatch.ApplyTo(booktoPatch, ModelState);
+            docPatch.ApplyTo(booktoPatch);
             if (!ModelState.IsValid)
             {
                 return new UnprocessableEntityObjectResult(ModelState);
