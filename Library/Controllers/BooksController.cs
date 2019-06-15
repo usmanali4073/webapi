@@ -73,7 +73,7 @@ namespace Library.API.Controllers
             }
             catch (Exception ex)
             {
-
+                Console.WriteLine(ex.Message);
                 throw;
             }
            
@@ -160,7 +160,16 @@ namespace Library.API.Controllers
             var BookforAuthorFromRepo = _libraryRepository.GetBookForAuthor(authorid, id);
             if (BookforAuthorFromRepo == null)
             {
-                return NotFound();
+                var BookforUpdateDto = new BookforUpdateDto();
+                docPatch.ApplyTo(BookforUpdateDto);
+                var book = Mapper.Map<Book>(BookforUpdateDto);
+                book.Id = id;
+                _libraryRepository.AddBookForAuthor(authorid,book);
+                if (!_libraryRepository.Save())
+                {
+                    throw new Exception($"Error Creating the Book for {authorid}");
+                }
+                return CreatedAtRoute("GetBookByAuthor", new { authorid = authorid, bookId = id }, book);
             }
             //Convert the Book to BookforUpdateDto so JsonPatch can be applied
             var booktoPatch = Mapper.Map<BookforUpdateDto>(BookforAuthorFromRepo);

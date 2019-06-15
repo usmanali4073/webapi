@@ -32,13 +32,13 @@ namespace Library
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = Configuration["connectionStrings:libraryDBConnectionString"];
+            //var connectionString = Configuration["connectionStrings:libraryDBConnectionString"];
 
 
-            services.AddDbContext<LibraryContext>(o =>
-            {
-                o.UseSqlServer(connectionString);
-            });
+            //services.AddDbContext<LibraryContext>(o =>
+            //{
+            //    o.UseSqlServer(connectionString);
+            //});
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddSwaggerGen(c =>
