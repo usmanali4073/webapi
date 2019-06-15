@@ -35,10 +35,10 @@ namespace Library
             //var connectionString = Configuration["connectionStrings:libraryDBConnectionString"];
 
 
-            //services.AddDbContext<LibraryContext>(o =>
-            //{
-            //    o.UseSqlServer(connectionString);
-            //});
+            services.AddDbContext<LibraryContext>(o =>
+            {
+                o.UseSqlServer(connectionString);
+            });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddSwaggerGen(c =>
